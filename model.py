@@ -66,13 +66,24 @@ def predict(model_tuple, X):
             pass
 
     if kind == 'keras':
-        preds = model.predict(X)
-        # handle common shapes: (1,1) sigmoid or (1,2) softmax
-        if hasattr(preds, 'ndim') and preds.ndim == 2 and preds.shape[1] == 1:
-            proba = float(preds[0, 0])
+        preds = model.predict(X, verbose=0)
+        # Handle different output shapes
+        # Note: Model trained with 1=Benign, 0=Malignant
+        if hasattr(preds, 'ndim') and preds.ndim == 2:
+            if preds.shape[1] == 1:
+                # Single output sigmoid: probability of class 1 (Benign)
+                proba = float(preds[0, 0])
+                pred = int(proba >= 0.5)
+            elif preds.shape[1] == 2:
+                # Two outputs (softmax): get probability of class 1 (Benign)
+                proba = float(preds[0, 1])
+                pred = int(np.argmax(preds[0]))
+            else:
+                proba = float(preds[0, 1])
+                pred = int(np.argmax(preds[0]))
         else:
-            proba = float(preds[0, 1])
-        pred = int(proba >= 0.5)
+            proba = float(preds[0])
+            pred = int(proba >= 0.5)
         return proba, pred
 
     # sklearn fallback
