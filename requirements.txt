@@ -1,0 +1,7 @@
+flask==2.2.5
+scikit-learn==1.3.2
+joblib==1.3.2
+pandas==2.2.3
+numpy==1.26.4
+# Optional: TensorFlow for Keras neural network support
+tensorflow>=2.12.0
